@@ -1,0 +1,1090 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>7600 | CRM هلدینگ</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700;800&display=swap');
+:root{--bg:#0a0a0a;--panel:#131313;--panel2:#191919;--line:#2a2a2a;--gold:#d6b36a;--gold2:#f2d99c;--text:#f5f1e8;--muted:#8d8d8d;--green:#68c99b;--red:#e78383;--orange:#f0a868}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font-family:Vazirmatn,Tahoma,sans-serif;font-size:13px}
+button,input,select,textarea{font:inherit}
+button{cursor:pointer}
+.app{display:flex;min-height:100vh}
+.sidebar{width:245px;flex-shrink:0;background:#101010;border-left:1px solid var(--line);padding:24px 15px;display:flex;flex-direction:column}
+.brand{display:flex;align-items:center;gap:12px;padding:0 8px 25px;border-bottom:1px solid var(--line)}
+.brand-mark{width:45px;height:45px;border:1px solid var(--gold);border-radius:12px;display:grid;place-items:center;color:var(--gold2);font-weight:800;font-size:19px;background:linear-gradient(145deg,#302515,#111)}
+.brand-name{font-size:16px;font-weight:800;letter-spacing:.5px}
+.brand-sub{font-size:9px;color:var(--muted);margin-top:4px;letter-spacing:.8px}
+.menu-label{font-size:10px;color:#666;margin:26px 12px 9px}
+.nav-item{width:100%;display:flex;align-items:center;gap:12px;padding:12px;border:1px solid transparent;border-radius:9px;background:transparent;color:#aaa;text-align:right;margin:3px 0;transition:.2s;position:relative}
+.nav-item:hover,.nav-item.active{color:var(--gold2);background:linear-gradient(90deg,#211c12,#17150f);border-color:#3a3020}
+.nav-icon{width:20px;text-align:center;font-size:16px}
+.nav-count{margin-right:auto;color:var(--gold);font-size:10px}
+.nav-badge{position:absolute;left:10px;top:8px;background:var(--red);color:#fff;font-size:9px;font-weight:700;padding:2px 6px;border-radius:10px;min-width:18px;text-align:center;animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.6}}
+.sidebar-bottom{margin-top:auto;border-top:1px solid var(--line);padding:17px 7px 0}
+.profile{display:flex;align-items:center;gap:10px}
+.avatar{width:36px;height:36px;border-radius:50%;display:grid;place-items:center;background:#302716;color:var(--gold2);border:1px solid #5b4828;font-weight:700;flex-shrink:0}
+.profile-name{font-size:12px;font-weight:600}.profile-role{font-size:10px;color:var(--muted);margin-top:4px}
+.main{flex:1;min-width:0;padding:26px 29px 35px}
+.topbar{display:flex;justify-content:space-between;align-items:center;gap:15px;margin-bottom:26px}
+.breadcrumb{font-size:10px;color:var(--muted);margin-bottom:7px}
+h1{font-size:22px;margin:0;font-weight:700}h1 span{color:var(--gold)}
+.top-actions{display:flex;align-items:center;gap:9px}
+select,.search,.field input,.field textarea{background:#101010;border:1px solid var(--line);color:var(--text);padding:10px 12px;border-radius:8px;outline:none}
+.btn-gold{background:var(--gold);color:#17120a;border:0;border-radius:8px;padding:11px 15px;font-weight:800}
+.btn-gold:hover{background:var(--gold2)}
+.btn-outline{background:transparent;border:1px solid #4a402c;color:var(--gold2);padding:8px 12px;border-radius:8px}
+.btn-sm{padding:6px 10px;font-size:10px;border-radius:6px}
+.btn-danger{background:transparent;border:1px solid #563131;color:var(--red);padding:8px 12px;border-radius:8px}
+.btn-success{background:transparent;border:1px solid #31563e;color:var(--green);padding:8px 12px;border-radius:8px}
+.mobile-menu{display:none;background:#191919;border:1px solid var(--line);color:var(--gold);padding:8px 10px;border-radius:8px;margin-left:8px}
+.welcome{position:relative;overflow:hidden;display:flex;justify-content:space-between;align-items:center;padding:25px 27px;border:1px solid #4c3d22;border-radius:13px;margin-bottom:23px;background:radial-gradient(ellipse at 85% 10%,#302514,#17140f 38%,#131313 80%)}
+.welcome:after{content:"7600";position:absolute;left:25px;top:-24px;font-size:100px;font-weight:800;color:#d6b36a0b;pointer-events:none}
+.eyebrow{color:var(--gold);font-size:10px;letter-spacing:1px}
+.welcome h2{font-size:20px;margin:9px 0}
+.welcome p{color:#aaa;margin:0;font-size:12px}
+.welcome-right{text-align:left;position:relative;z-index:1}
+.welcome-right strong{font-size:23px;color:var(--gold2)}
+.welcome-right small{display:block;color:#999;margin-top:5px}
+.section-heading{display:flex;justify-content:space-between;align-items:center;gap:12px;margin:24px 0 13px}
+.section-heading h3{font-size:14px;margin:0}.section-heading p{margin:5px 0 0;font-size:11px;color:var(--muted)}
+.kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:13px}
+.kpi,.panel{background:var(--panel);border:1px solid var(--line);border-radius:12px;min-width:0}
+.kpi{padding:17px;position:relative;overflow:hidden}
+.kpi-top{display:flex;justify-content:space-between;align-items:center;color:#aaa;font-size:11px}
+.kpi-icon{width:33px;height:33px;border:1px solid #403522;background:#211c13;color:var(--gold);border-radius:9px;display:grid;place-items:center;font-size:16px}
+.kpi-number{font-size:25px;font-weight:800;margin:15px 0 8px}
+.kpi-number small{font-size:10px;color:#aaa;font-weight:400}
+.kpi-foot{font-size:10px;color:var(--muted);line-height:1.8}
+.panel{padding:18px}
+.panel-title{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:20px}
+.panel-title h3{margin:0;font-size:13px}.panel-title span{font-size:10px;color:var(--muted)}
+.page{display:none}.page.active{display:block}
+.customer-tools{display:flex;gap:10px;align-items:center;margin-bottom:15px;flex-wrap:wrap}
+.search{flex:1;min-width:100px}
+.search:focus,input:focus,select:focus,textarea:focus{border-color:#8e713c}
+.table-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;white-space:nowrap}
+th{text-align:right;color:#777;font-size:10px;font-weight:500;padding:12px 10px;border-bottom:1px solid #303030}
+td{padding:12px 10px;border-bottom:1px solid #242424;font-size:11px;color:#ccc}
+tbody tr:hover{background:#1a1a1a}
+.customer-cell{display:flex;align-items:center;gap:9px}
+.customer-cell .avatar{width:29px;height:29px;font-size:10px}
+.customer-cell strong{font-weight:600;color:#eee}
+.amount{color:var(--gold2);font-weight:600}
+.empty{text-align:center;color:#888;padding:30px;line-height:2}
+.footer-note{text-align:center;color:#565656;font-size:10px;margin-top:25px}
+.modal-backdrop{display:none;position:fixed;inset:0;background:#000b;z-index:10;align-items:center;justify-content:center;padding:15px}
+.modal-backdrop.open{display:flex}
+.modal{width:min(560px,100%);max-height:90vh;overflow:auto;background:#151515;border:1px solid #493b22;border-radius:14px;padding:23px}
+.modal-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
+.modal-head h3{margin:0;font-size:16px}
+.close{background:transparent;border:0;color:#aaa;font-size:24px}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:13px}
+.field{display:flex;flex-direction:column;gap:7px}
+.field.full{grid-column:1/-1}
+.field label{font-size:11px;color:#aaa}
+.field input,.field textarea,.field select{width:100%}
+.modal-actions{display:flex;justify-content:flex-start;gap:9px;margin-top:20px;flex-wrap:wrap}
+.toast{position:fixed;bottom:22px;left:22px;background:#1d2a21;border:1px solid #31563e;color:#9de1b4;padding:12px 17px;border-radius:9px;display:none;z-index:20;transition:opacity .3s;max-width:320px}
+.toast.show{display:block;opacity:1}
+.toast.error{background:#351e1e;border-color:#563131;color:#e78383}
+.toast.warning{background:#332918;border-color:#564a31;color:#f2d99c}
+.pill{display:inline-block;border-radius:5px;padding:4px 7px;font-size:9px}
+.pill.gold{background:#332918;color:var(--gold2)}.pill.green{background:#173026;color:var(--green)}.pill.red{background:#351e1e;color:var(--red)}.pill.orange{background:#3a2a15;color:var(--orange)}
+
+/* نوار وضعیت اتصال */
+.conn-status-bar{display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:9px;margin-bottom:15px;font-size:11px}
+.conn-status-bar.connected{background:#173026;border:1px solid #31563e;color:#9de1b4}
+.conn-status-bar.disconnected{background:#351e1e;border:1px solid #563131;color:#e78383;cursor:pointer}
+.conn-status-bar.testing{background:#332918;border:1px solid #564a31;color:#f2d99c}
+.conn-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.connected .conn-dot{background:var(--green);box-shadow:0 0 8px var(--green)}
+.disconnected .conn-dot{background:var(--red);box-shadow:0 0 8px var(--red);animation:pulse 1.5s infinite}
+.testing .conn-dot{background:var(--orange);animation:pulse 1s infinite}
+
+/* کارت راهنمای تنظیم */
+.setup-card{background:linear-gradient(135deg,#1f1810,#131313);border:1px solid #4c3d22;border-radius:12px;padding:20px;margin-bottom:20px}
+.setup-card h3{margin:0 0 8px;font-size:14px;color:var(--gold2)}
+.setup-card p{margin:0 0 15px;font-size:11px;color:#aaa;line-height:2}
+.setup-steps{display:flex;flex-direction:column;gap:10px}
+.setup-step{display:flex;gap:12px;align-items:flex-start;padding:10px;background:#181818;border:1px solid var(--line);border-radius:8px}
+.step-num{width:26px;height:26px;background:var(--gold);color:#17120a;border-radius:50%;display:grid;place-items:center;font-weight:800;font-size:12px;flex-shrink:0}
+.step-content{flex:1;font-size:11px;line-height:1.9}
+.step-content strong{color:var(--gold2);display:block;margin-bottom:3px}
+.step-content a{color:var(--gold2);text-decoration:underline}
+
+/* نوار یادآوری */
+.alert-banner{background:linear-gradient(90deg,#3a1515,#1f0f0f);border:1px solid #6b2a2a;border-radius:12px;padding:16px 20px;margin-bottom:20px;display:none;animation:slideDown .4s}
+.alert-banner.show{display:block}
+@keyframes slideDown{from{opacity:0;transform:translateY(-10px)}to{opacity:1;transform:translateY(0)}}
+.alert-head{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.alert-icon{width:36px;height:36px;background:#5a1f1f;border:1px solid #8a3535;border-radius:9px;display:grid;place-items:center;font-size:18px;color:#ff9999}
+.alert-head strong{font-size:13px;color:#ff9999}
+.alert-head small{display:block;color:#c08080;font-size:10px;margin-top:3px}
+.alert-list{display:flex;flex-direction:column;gap:8px;max-height:240px;overflow-y:auto}
+.alert-item{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 12px;background:#1a0d0d;border:1px solid #3a1f1f;border-radius:8px;flex-wrap:wrap}
+.alert-item-info{flex:1;min-width:180px}
+.alert-item-info strong{font-size:11px;color:#f5f1e8;display:block}
+.alert-item-info small{font-size:10px;color:#c08080;margin-top:3px;display:block}
+.alert-item-date{font-size:10px;color:#ff9999;font-weight:700;white-space:nowrap}
+.alert-item.overdue{border-color:#6b2a2a;background:#2a1010}
+.alert-item.today{border-color:#8a6020;background:#2a1f10}
+.alert-item.today .alert-item-date{color:#f0a868}
+
+.reminder-card{background:#181818;border:1px solid var(--line);border-radius:10px;padding:14px;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+.reminder-card.overdue{border-color:#6b2a2a;background:linear-gradient(90deg,#2a1010,#181818)}
+.reminder-card.today{border-color:#8a6020;background:linear-gradient(90deg,#2a1f10,#181818)}
+.reminder-card.done{opacity:.5}
+.reminder-info{flex:1;min-width:200px}
+.reminder-info strong{font-size:12px;display:block;margin-bottom:4px}
+.reminder-info small{color:var(--muted);font-size:10px}
+.reminder-meta{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.reminder-date{background:#211c13;border:1px solid #3d3220;padding:6px 10px;border-radius:7px;color:var(--gold2);font-size:10px;text-align:center;min-width:70px}
+.reminder-date.overdue{background:#3a1515;border-color:#6b2a2a;color:#ff9999}
+.reminder-date.today{background:#3a2a15;border-color:#8a6020;color:#f0a868}
+
+.detail-row{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid #2a2a2a;gap:10px;flex-wrap:wrap}
+.detail-label{color:#8d8d8d;font-size:11px}
+.detail-value{font-size:12px;font-weight:600;color:#f5f1e8}
+
+.filter-tabs{display:flex;gap:8px;margin-bottom:15px;flex-wrap:wrap}
+.filter-tab{background:#181818;border:1px solid var(--line);color:#aaa;padding:7px 13px;border-radius:7px;font-size:11px}
+.filter-tab.active{background:#211c13;border-color:#4a402c;color:var(--gold2)}
+
+@media(max-width:1050px){.sidebar{width:215px}.main{padding:20px 17px}.kpis{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:760px){
+.sidebar{display:none;position:fixed;right:0;top:0;bottom:0;z-index:9;width:255px;box-shadow:-20px 0 50px #0009}
+.sidebar.open{display:flex}.main{padding:16px 12px}
+.topbar{align-items:flex-start}.top-actions{flex-wrap:wrap;justify-content:flex-end}
+.mobile-menu{display:inline-block}h1{font-size:18px}.welcome{padding:19px}.welcome h2{font-size:17px}
+.welcome-right{display:none}.org-select{max-width:140px}
+.form-grid{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+<div class="app">
+<aside class="sidebar" id="sidebar">
+  <div class="brand">
+    <div class="brand-mark">76</div>
+    <div><div class="brand-name">7600 HOLDING</div><div class="brand-sub">CENTRAL SALES MANAGEMENT</div></div>
+  </div>
+  <div class="menu-label">مدیریت مرکزی</div>
+  <button class="nav-item active" data-page="dashboard"><span class="nav-icon">▦</span>داشبورد مدیریتی</button>
+  <button class="nav-item" data-page="reminders"><span class="nav-icon">⏰</span>یادآوری‌ها <span class="nav-badge" id="reminderBadge" style="display:none">۰</span></button>
+  <button class="nav-item" data-page="customers"><span class="nav-icon">♙</span>بانک مشتریان <span class="nav-count" id="customerCount">۰</span></button>
+  <button class="nav-item" data-page="followups"><span class="nav-icon">◷</span>همه پیگیری‌ها</button>
+  <div class="menu-label">سازمان</div>
+  <button class="nav-item" data-page="reports"><span class="nav-icon">▥</span>گزارش‌های مدیریتی</button>
+  <button class="nav-item" data-page="settings"><span class="nav-icon">⚙</span>تنظیمات اتصال</button>
+  <div class="sidebar-bottom"><div class="profile"><div class="avatar">مد</div><div><div class="profile-name">مدیر کل هلدینگ</div><div class="profile-role" id="profileRole">در حال اتصال...</div></div></div></div>
+</aside>
+
+<main class="main">
+<header class="topbar">
+  <div>
+    <div style="display:flex;align-items:center">
+      <button class="mobile-menu" id="mobileMenu">☰</button>
+      <div><div class="breadcrumb">هلدینگ ۷۶۰۰ / مدیریت فروش</div><h1 id="pageTitle">داشبورد <span>مدیریتی</span></h1></div>
+    </div>
+  </div>
+  <div class="top-actions">
+    <select class="org-select" id="orgFilter" aria-label="فیلتر مجموعه">
+      <option value="all">همه مجموعه‌ها</option><option value="7600">۷۶۰۰ هلدینگ</option><option value="zaad">زادمدیا</option>
+    </select>
+    <button class="btn-gold" id="addCustomerBtn">＋ ثبت مشتری</button>
+  </div>
+</header>
+
+<!-- صفحه داشبورد -->
+<section class="page active" id="page-dashboard">
+  <!-- نوار وضعیت اتصال -->
+  <div class="conn-status-bar disconnected" id="connStatusBar">
+    <span class="conn-dot"></span>
+    <span id="connStatusText">در حال بررسی اتصال...</span>
+    <button class="btn-sm btn-outline" style="margin-right:auto;padding:4px 10px;font-size:10px" onclick="goTo('settings')">تنظیم اتصال</button>
+  </div>
+
+  <!-- نوار یادآوری -->
+  <div class="alert-banner" id="alertBanner">
+    <div class="alert-head">
+      <div class="alert-icon">⏰</div>
+      <div>
+        <strong id="alertTitle">یادآوری‌های فعال</strong>
+        <small id="alertSubtitle">مشتریانی که نیاز به پیگیری دارند</small>
+      </div>
+    </div>
+    <div class="alert-list" id="alertList"></div>
+  </div>
+
+  <div class="welcome">
+    <div><div class="eyebrow">CENTRAL COMMAND CENTER</div><h2>دید کامل، تصمیم دقیق، رشد پایدار</h2><p>هیچ مشتری‌ای فراموش نمی‌شود</p></div>
+    <div class="welcome-right"><strong>7600 × ZAAD</strong><small>یک داشبورد، دو مجموعه، یک مسیر رشد</small></div>
+  </div>
+  <div class="section-heading"><div><h3>نمای کلی عملکرد</h3><p>شاخص‌های لحظه‌ای از دیتابیس</p></div></div>
+  <div class="kpis">
+    <div class="kpi"><div class="kpi-top"><span>مشتریان ثبت‌شده</span><span class="kpi-icon">♙</span></div><div class="kpi-number" id="kpiCustomers">۰</div><div class="kpi-foot">کل بانک اطلاعاتی</div></div>
+    <div class="kpi"><div class="kpi-top"><span>یادآوری امروز</span><span class="kpi-icon" style="color:var(--orange)">⏰</span></div><div class="kpi-number" id="kpiTodayReminders" style="color:var(--orange)">۰</div><div class="kpi-foot">نیاز به پیگیری امروز</div></div>
+    <div class="kpi"><div class="kpi-top"><span>عقب‌افتاده</span><span class="kpi-icon" style="color:var(--red)">⚠</span></div><div class="kpi-number" id="kpiOverdue" style="color:var(--red)">۰</div><div class="kpi-foot">فرصت‌های از دست رفته</div></div>
+    <div class="kpi"><div class="kpi-top"><span>آینده نزدیک</span><span class="kpi-icon" style="color:var(--green)">◷</span></div><div class="kpi-number" id="kpiUpcoming" style="color:var(--green)">۰</div><div class="kpi-foot">۷ روز آینده</div></div>
+  </div>
+</section>
+
+<!-- صفحه یادآوری‌ها -->
+<section class="page" id="page-reminders">
+  <div class="section-heading"><div><h3>مرکز یادآوری‌ها</h3><p>پیگیری‌های زمان‌بندی‌شده برای مشتریان</p></div><button class="btn-gold" id="addReminderBtn">＋ ثبت یادآوری جدید</button></div>
+  <div class="panel">
+    <div class="filter-tabs">
+      <button class="filter-tab active" data-filter="all">همه</button>
+      <button class="filter-tab" data-filter="overdue">عقب‌افتاده</button>
+      <button class="filter-tab" data-filter="today">امروز</button>
+      <button class="filter-tab" data-filter="upcoming">آینده</button>
+      <button class="filter-tab" data-filter="done">انجام‌شده</button>
+    </div>
+    <div id="remindersList"></div>
+  </div>
+</section>
+
+<!-- صفحه مشتریان -->
+<section class="page" id="page-customers">
+  <div class="section-heading"><div><h3>بانک اطلاعات مشتریان</h3><p>برای مشاهده جزئیات روی دکمه "جزئیات" کلیک کنید</p></div></div>
+  <div class="panel">
+    <div class="customer-tools"><input class="search" id="customerSearch" placeholder="جست‌وجوی نام، شماره یا شرکت..."><button class="btn-gold" id="addCustomerBtn2">＋ مشتری جدید</button></div>
+    <div class="table-wrap"><table><thead><tr><th>مشتری</th><th>شماره تماس</th><th>مجموعه</th><th>مسئول فروش</th><th>وضعیت</th><th>عملیات</th></tr></thead><tbody id="customerTable"></tbody></table></div>
+  </div>
+</section>
+
+<!-- صفحه همه پیگیری‌ها -->
+<section class="page" id="page-followups">
+  <div class="section-heading"><div><h3>تاریخچه پیگیری‌ها</h3><p>تمام یادآوری‌های ثبت‌شده</p></div></div>
+  <div class="panel"><div class="table-wrap"><table><thead><tr><th>عنوان</th><th>مشتری</th><th>بازاریاب</th><th>تاریخ</th><th>وضعیت</th></tr></thead><tbody id="allFollowupsTable"></tbody></table></div></div>
+</section>
+
+<!-- صفحه گزارشات -->
+<section class="page" id="page-reports">
+  <div class="section-heading"><div><h3>گزارش‌های مدیریتی</h3><p>تفکیک مشتریان بر اساس مجموعه و وضعیت</p></div></div>
+  <div class="panel" id="reportPanel"><div class="empty">در حال محاسبه...</div></div>
+</section>
+
+<!-- صفحه تنظیمات اتصال -->
+<section class="page" id="page-settings">
+  <div class="section-heading"><div><h3>تنظیمات اتصال به دیتابیس ابری</h3><p>یک بار تنظیم کنید، برای همیشه کار می‌کند</p></div></div>
+  
+  <div class="panel">
+    <!-- وضعیت فعلی -->
+    <div class="conn-status-bar disconnected" id="settingsConnBar">
+      <span class="conn-dot"></span>
+      <span id="settingsConnText">در حال بررسی...</span>
+    </div>
+
+    <!-- راهنمای تنظیم -->
+    <div class="setup-card" id="setupGuide">
+      <h3>🔧 راهنمای اتصال به Supabase (رایگان و دائمی)</h3>
+      <p>برای اینکه اطلاعات برای همیشه ذخیره شود و همه بازاریاب‌ها به آن دسترسی داشته باشند، باید یک حساب رایگان در Supabase بسازید و کلیدهای آن را در کادرهای زیر وارد کنید.</p>
+      
+      <div class="setup-steps">
+        <div class="setup-step">
+          <div class="step-num">۱</div>
+          <div class="step-content">
+            <strong>ساخت حساب رایگان</strong>
+            به سایت <a href="https://supabase.com" target="_blank">supabase.com</a> بروید و با ایمیل خود ثبت‌نام کنید. سپس یک پروژه جدید بسازید.
+          </div>
+        </div>
+        <div class="setup-step">
+          <div class="step-num">۲</div>
+          <div class="step-content">
+            <strong>ساخت جدول‌ها</strong>
+            در پنل Supabase، به بخش <strong>SQL Editor</strong> بروید، روی <strong>New Query</strong> کلیک کنید و کد SQL پایین این صفحه را کپی و <strong>Run</strong> کنید.
+          </div>
+        </div>
+        <div class="setup-step">
+          <div class="step-num">۳</div>
+          <div class="step-content">
+            <strong>کپی کلیدها</strong>
+            به مسیر <strong>Project Settings → API</strong> بروید. دو مقدار <strong>Project URL</strong> و <strong>anon public key</strong> را کپی کنید.
+          </div>
+        </div>
+        <div class="setup-step">
+          <div class="step-num">۴</div>
+          <div class="step-content">
+            <strong>وارد کردن در کادرهای زیر</strong>
+            کلیدها را در فرم زیر وارد کنید و دکمه "ذخیره و تست اتصال" را بزنید.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- فرم ورود کلیدها -->
+    <h3 style="font-size:13px;margin:20px 0 12px">🔑 ورود کلیدهای اتصال</h3>
+    <form id="settingsForm">
+      <div class="form-grid">
+        <div class="field full">
+          <label>Project URL (آدرس پروژه Supabase)</label>
+          <input id="setUrl" type="url" placeholder="https://xxxxx.supabase.co" dir="ltr" style="text-align:left">
+        </div>
+        <div class="field full">
+          <label>anon public key (کلید عمومی)</label>
+          <input id="setKey" type="text" placeholder="eyJhbGciOi..." dir="ltr" style="text-align:left;font-size:10px">
+        </div>
+      </div>
+      <div class="modal-actions">
+        <button class="btn-gold" type="submit">💾 ذخیره و تست اتصال</button>
+        <button class="btn-outline" type="button" id="clearKeysBtn">🗑 پاک کردن کلیدها</button>
+      </div>
+    </form>
+
+    <hr style="border:0;border-top:1px solid var(--line);margin:25px 0">
+
+    <!-- کد SQL -->
+    <h3 style="font-size:13px;margin:0 0 10px">📋 کد SQL برای ساخت جدول‌ها (یک بار اجرا کنید)</h3>
+    <p style="color:#aaa;font-size:11px;line-height:2;margin:0 0 10px">این کد را در SQL Editor کپی و Run کنید:</p>
+    <pre style="background:#0a0a0a;border:1px solid var(--line);border-radius:8px;padding:12px;font-size:10px;color:#aaa;overflow-x:auto;direction:ltr;text-align:left;font-family:monospace;line-height:1.7">create table if not exists customers (
+  id uuid primary key default gen_random_uuid(),
+  created_at timestamptz default now(),
+  name text, phone text, org text, owner text, status text, note text
+);
+create table if not exists followups (
+  id uuid primary key default gen_random_uuid(),
+  created_at timestamptz default now(),
+  title text, customer_name text, assignee text,
+  followup_date date, priority text, note text, completed boolean default false
+);
+alter table customers enable row level security;
+alter table followups enable row level security;
+create policy "Public Access" on customers for all using (true) with check (true);
+create policy "Public Access" on followups for all using (true) with check (true);</pre>
+    <button class="btn-outline btn-sm" onclick="copySQL()" style="margin-top:8px">📋 کپی کد SQL</button>
+  </div>
+</section>
+
+<div class="footer-note">7600 HOLDING × ZAAD MEDIA · CRM CLOUD</div>
+</main>
+</div>
+
+<!-- مودال ثبت مشتری -->
+<div class="modal-backdrop" id="customerModal">
+<div class="modal">
+  <div class="modal-head"><h3 id="customerModalTitle">ثبت مشتری جدید</h3><button class="close" onclick="closeModal('customerModal')">×</button></div>
+  <form id="customerForm">
+    <input type="hidden" id="custId">
+    <div class="form-grid">
+      <div class="field"><label>نام مشتری / شرکت *</label><input id="custName" required></div>
+      <div class="field"><label>شماره تماس *</label><input id="custPhone" required inputmode="tel"></div>
+      <div class="field"><label>مجموعه</label><select id="custOrg"><option value="7600">۷۶۰۰ هلدینگ</option><option value="zaad">زادمدیا</option><option value="both">هر دو</option></select></div>
+      <div class="field"><label>مسئول فروش</label><input id="custOwner" placeholder="نام بازاریاب"></div>
+      <div class="field"><label>وضعیت</label><select id="custStatus"><option>سرنخ جدید</option><option>در حال مذاکره</option><option>مشتری فعال</option><option>پیگیری لازم</option></select></div>
+      <div class="field full"><label>یادداشت</label><textarea id="custNote" rows="2"></textarea></div>
+    </div>
+    <div class="modal-actions"><button class="btn-gold" type="submit">💾 ذخیره</button><button class="btn-outline" type="button" onclick="closeModal('customerModal')">انصراف</button></div>
+  </form>
+</div>
+</div>
+
+<!-- مودال جزئیات مشتری -->
+<div class="modal-backdrop" id="detailModal">
+<div class="modal">
+  <div class="modal-head"><h3>جزئیات مشتری</h3><button class="close" onclick="closeModal('detailModal')">×</button></div>
+  <div id="detailContent"></div>
+  <div class="modal-actions">
+    <button class="btn-gold" id="editFromDetailBtn">ویرایش</button>
+    <button class="btn-gold" id="addReminderForCustomerBtn" style="background:var(--orange);color:#1a0f05">⏰ ثبت یادآوری</button>
+    <button class="btn-danger" id="deleteFromDetailBtn">حذف</button>
+  </div>
+</div>
+</div>
+
+<!-- مودال ثبت یادآوری -->
+<div class="modal-backdrop" id="reminderModal">
+<div class="modal">
+  <div class="modal-head"><h3>ثبت یادآوری جدید</h3><button class="close" onclick="closeModal('reminderModal')">×</button></div>
+  <form id="reminderForm">
+    <input type="hidden" id="remId">
+    <div class="form-grid">
+      <div class="field full"><label>عنوان یادآوری *</label><input id="remTitle" required placeholder="مثال: تماس برای پیگیری پیش‌فاکتور"></div>
+      <div class="field"><label>نام مشتری</label><input id="remCustomer" placeholder="نام مشتری مرتبط"></div>
+      <div class="field"><label>بازاریاب مسئول</label><input id="remAssignee" placeholder="نام بازاریاب"></div>
+      <div class="field">
+        <label>یادآوری بعد از (تعداد روز)</label>
+        <select id="remDays">
+          <option value="1">۱ روز دیگر</option>
+          <option value="3">۳ روز دیگر</option>
+          <option value="5">۵ روز دیگر</option>
+          <option value="7">۱ هفته دیگر</option>
+          <option value="10" selected>۱۰ روز دیگر</option>
+          <option value="15">۱۵ روز دیگر</option>
+          <option value="30">۱ ماه دیگر</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>اولویت</label>
+        <select id="remPriority">
+          <option value="عادی">عادی</option>
+          <option value="بالا">بالا</option>
+          <option value="فوری">فوری</option>
+        </select>
+      </div>
+      <div class="field full"><label>توضیحات</label><textarea id="remNote" rows="2" placeholder="نکات مهم برای پیگیری"></textarea></div>
+    </div>
+    <div class="modal-actions"><button class="btn-gold" type="submit">ثبت یادآوری</button><button class="btn-outline" type="button" onclick="closeModal('reminderModal')">انصراف</button></div>
+  </form>
+</div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ==========================================
+// مدیریت کلیدها از طریق localStorage
+// ==========================================
+const STORAGE_KEY_URL = 'crm7600_supabase_url';
+const STORAGE_KEY_KEY = 'crm7600_supabase_key';
+
+function getSavedUrl() { return localStorage.getItem(STORAGE_KEY_URL) || ''; }
+function getSavedKey() { return localStorage.getItem(STORAGE_KEY_KEY) || ''; }
+function saveKeys(url, key) {
+  localStorage.setItem(STORAGE_KEY_URL, url);
+  localStorage.setItem(STORAGE_KEY_KEY, key);
+}
+function clearKeys() {
+  localStorage.removeItem(STORAGE_KEY_URL);
+  localStorage.removeItem(STORAGE_KEY_KEY);
+}
+
+const $ = id => document.getElementById(id);
+const titles = {
+  dashboard:'داشبورد <span>مدیریتی</span>',
+  reminders:'یادآوری‌های <span>هوشمند</span>',
+  customers:'بانک <span>مشتریان</span>',
+  followups:'تاریخچه <span>پیگیری‌ها</span>',
+  reports:'گزارش‌های <span>مدیریتی</span>',
+  settings:'تنظیمات <span>اتصال</span>'
+};
+
+let customers = [];
+let followups = [];
+let supabaseClient = null;
+let isCloudMode = false;
+let currentFilter = 'all';
+let currentCustomerId = null;
+
+// راه‌اندازی کلاینت بر اساس کلیدهای ذخیره‌شده
+function initSupabase() {
+  const url = getSavedUrl();
+  const key = getSavedKey();
+  
+  if (url && key && url.startsWith('https://') && url.includes('.supabase.co')) {
+    try {
+      supabaseClient = window.supabase.createClient(url, key);
+      isCloudMode = true;
+      updateConnectionUI('connected', '✅ متصل به دیتابیس ابری');
+      $('profileRole').textContent = 'نسخه آنلاین';
+      return true;
+    } catch (e) {
+      console.error('خطا در ساخت کلاینت:', e);
+      isCloudMode = false;
+      updateConnectionUI('disconnected', '❌ خطا در اتصال. کلیدها را بررسی کنید.');
+      $('profileRole').textContent = 'خطا در اتصال';
+      return false;
+    }
+  } else {
+    isCloudMode = false;
+    updateConnectionUI('disconnected', '⚠ اتصال برقرار نیست. برای شروع، کلیدهای Supabase را تنظیم کنید.');
+    $('profileRole').textContent = 'نیاز به تنظیم اتصال';
+    return false;
+  }
+}
+
+function updateConnectionUI(state, text) {
+  const bar = $('connStatusBar');
+  const settingsBar = $('settingsConnBar');
+  const statusText = $('connStatusText');
+  const settingsText = $('settingsConnText');
+  
+  bar.className = 'conn-status-bar ' + state;
+  settingsBar.className = 'conn-status-bar ' + state;
+  if (statusText) statusText.textContent = text;
+  if (settingsText) settingsText.textContent = text;
+}
+
+// ===== توابع کمکی =====
+function orgName(org){ return org==='7600'?'۷۶۰۰ هلدینگ':org==='zaad'?'زادمدیا':'هر دو مجموعه'; }
+function initials(name){ return name ? name.trim().split(/\s+/).slice(0,2).map(x=>x[0]||'').join('') : '؟'; }
+function escapeHTML(value){ return String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
+function showToast(message, type = 'success'){
+  const t=$('toast'); t.textContent=message; t.className = 'toast show ' + type;
+  setTimeout(()=>t.classList.remove('show'), 3500);
+}
+
+function closeModal(id) { $(id).classList.remove('open'); }
+function openModal(id) { $(id).classList.add('open'); }
+
+function toPersianDate(dateStr) {
+  if (!dateStr) return '—';
+  try {
+    const d = new Date(dateStr);
+    if (isNaN(d.getTime())) return '—';
+    return new Intl.DateTimeFormat('fa-IR', {year:'numeric',month:'long',day:'numeric'}).format(d);
+  } catch(e) { return '—'; }
+}
+
+function todayISO() {
+  const d = new Date();
+  const offset = d.getTimezoneOffset();
+  const local = new Date(d.getTime() - offset * 60000);
+  return local.toISOString().split('T')[0];
+}
+
+function calcFutureDate(days) {
+  const d = new Date();
+  d.setDate(d.getDate() + parseInt(days));
+  const offset = d.getTimezoneOffset();
+  const local = new Date(d.getTime() - offset * 60000);
+  return local.toISOString().split('T')[0];
+}
+
+function getReminderStatus(dateStr) {
+  if (!dateStr) return 'unknown';
+  const today = new Date(todayISO());
+  const target = new Date(dateStr);
+  const diffDays = Math.floor((target - today) / (1000 * 60 * 60 * 24));
+  if (diffDays < 0) return 'overdue';
+  if (diffDays === 0) return 'today';
+  if (diffDays <= 7) return 'upcoming';
+  return 'future';
+}
+
+// ===== بررسی اتصال قبل از عملیات =====
+function ensureConnected() {
+  if (!isCloudMode || !supabaseClient) {
+    showToast('⚠ ابتدا باید اتصال به دیتابیس را از بخش "تنظیمات اتصال" برقرار کنید', 'error');
+    setTimeout(() => goTo('settings'), 1500);
+    return false;
+  }
+  return true;
+}
+
+// ===== بارگذاری داده‌ها =====
+async function loadData() {
+  if (!isCloudMode) {
+    renderAll();
+    return;
+  }
+  
+  updateConnectionUI('testing', '⏳ در حال دریافت اطلاعات...');
+  
+  try {
+    const [cRes, fRes] = await Promise.all([
+      supabaseClient.from('customers').select('*').order('created_at', { ascending: false }),
+      supabaseClient.from('followups').select('*').order('followup_date', { ascending: true })
+    ]);
+    
+    if (cRes.error) {
+      console.error('خطای customers:', cRes.error);
+      updateConnectionUI('disconnected', '❌ خطا در دریافت مشتریان: ' + cRes.error.message);
+      return;
+    }
+    if (fRes.error) {
+      console.error('خطای followups:', fRes.error);
+      updateConnectionUI('disconnected', '❌ خطا در دریافت پیگیری‌ها: ' + fRes.error.message);
+      return;
+    }
+    
+    customers = cRes.data || [];
+    followups = fRes.data || [];
+    
+    updateConnectionUI('connected', `✅ متصل · ${customers.length} مشتری · ${followups.length} یادآوری`);
+    
+    renderAll();
+    checkAndNotify();
+  } catch (e) {
+    console.error('خطای کلی:', e);
+    updateConnectionUI('disconnected', '❌ خطا در ارتباط با سرور');
+  }
+}
+
+function renderAll() {
+  renderCustomers();
+  renderReminders();
+  renderDashboard();
+  renderReports();
+  renderAllFollowups();
+  updateBadge();
+  updateAlertBanner();
+}
+
+function updateBadge() {
+  const active = followups.filter(f => !f.completed && ['overdue','today'].includes(getReminderStatus(f.followup_date))).length;
+  const badge = $('reminderBadge');
+  if (active > 0) {
+    badge.textContent = active.toLocaleString('fa-IR');
+    badge.style.display = 'inline-block';
+  } else {
+    badge.style.display = 'none';
+  }
+}
+
+function updateAlertBanner() {
+  const urgent = followups.filter(f => !f.completed && ['overdue','today'].includes(getReminderStatus(f.followup_date)));
+  const banner = $('alertBanner');
+  const list = $('alertList');
+  
+  if (urgent.length === 0) {
+    banner.classList.remove('show');
+    return;
+  }
+  
+  const overdueCount = urgent.filter(f => getReminderStatus(f.followup_date) === 'overdue').length;
+  const todayCount = urgent.filter(f => getReminderStatus(f.followup_date) === 'today').length;
+  
+  $('alertTitle').textContent = `⚠ ${urgent.length} یادآوری نیاز به اقدام فوری`;
+  $('alertSubtitle').textContent = `${overdueCount} عقب‌افتاده · ${todayCount} برای امروز`;
+  
+  list.innerHTML = urgent.slice(0, 5).map(f => {
+    const status = getReminderStatus(f.followup_date);
+    return `
+      <div class="alert-item ${status}">
+        <div class="alert-item-info">
+          <strong>${escapeHTML(f.title)}</strong>
+          <small>${escapeHTML(f.customer_name || 'بدون مشتری')} · ${escapeHTML(f.assignee || 'نامشخص')}</small>
+        </div>
+        <div class="alert-item-date">${status === 'overdue' ? '⚠ عقب‌افتاده' : '🔔 امروز'}</div>
+      </div>
+    `;
+  }).join('');
+  
+  banner.classList.add('show');
+}
+
+function renderDashboard() {
+  $('kpiCustomers').textContent = customers.length.toLocaleString('fa-IR');
+  $('kpiTodayReminders').textContent = followups.filter(f => !f.completed && getReminderStatus(f.followup_date) === 'today').length.toLocaleString('fa-IR');
+  $('kpiOverdue').textContent = followups.filter(f => !f.completed && getReminderStatus(f.followup_date) === 'overdue').length.toLocaleString('fa-IR');
+  $('kpiUpcoming').textContent = followups.filter(f => !f.completed && getReminderStatus(f.followup_date) === 'upcoming').length.toLocaleString('fa-IR');
+}
+
+function renderCustomers() {
+  const q = $('customerSearch').value.trim().toLowerCase();
+  const filter = $('orgFilter').value;
+  const filtered = customers.filter(c => {
+    const text = [c.name, c.phone, c.owner, c.status].join(' ').toLowerCase();
+    const orgOk = filter === 'all' || c.org === filter || c.org === 'both';
+    return text.includes(q) && orgOk;
+  });
+
+  $('customerTable').innerHTML = filtered.length ? filtered.map(c => `
+    <tr>
+      <td><div class="customer-cell"><div class="avatar">${initials(c.name)}</div><div><strong>${escapeHTML(c.name)}</strong></div></div></td>
+      <td>${escapeHTML(c.phone)}</td><td>${orgName(c.org)}</td><td>${escapeHTML(c.owner || '—')}</td>
+      <td><span class="pill ${c.status === 'مشتری فعال' ? 'green' : 'gold'}">${escapeHTML(c.status)}</span></td>
+      <td><button class="btn-outline btn-sm" onclick="viewCustomer('${c.id}')">جزئیات</button></td>
+    </tr>`).join('') : '<tr><td colspan="6" class="empty">مشتری‌ای پیدا نشد</td></tr>';
+  
+  $('customerCount').textContent = customers.length.toLocaleString('fa-IR');
+}
+
+function renderReminders() {
+  let list = followups;
+  if (currentFilter !== 'all') {
+    if (currentFilter === 'done') list = list.filter(f => f.completed);
+    else list = list.filter(f => !f.completed && getReminderStatus(f.followup_date) === currentFilter);
+  }
+  
+  const container = $('remindersList');
+  if (list.length === 0) {
+    container.innerHTML = '<div class="empty">هیچ یادآوری‌ای در این دسته نیست</div>';
+    return;
+  }
+  
+  container.innerHTML = list.map(f => {
+    const status = f.completed ? 'done' : getReminderStatus(f.followup_date);
+    const statusLabel = {overdue:'⚠ عقب‌افتاده',today:'🔔 امروز',upcoming:'◷ آینده',future:'⏳ در انتظار',done:'✓ انجام‌شده'}[status];
+    const pillClass = {overdue:'red',today:'orange',upcoming:'green',future:'gold',done:'green'}[status];
+    
+    return `
+      <div class="reminder-card ${status}">
+        <div class="reminder-info">
+          <strong>${escapeHTML(f.title)}</strong>
+          <small>${escapeHTML(f.customer_name || '—')} · ${escapeHTML(f.assignee || '—')} · <span class="pill ${pillClass}">${statusLabel}</span></small>
+        </div>
+        <div class="reminder-meta">
+          <div class="reminder-date ${status === 'overdue' ? 'overdue' : status === 'today' ? 'today' : ''}">${toPersianDate(f.followup_date)}</div>
+          ${!f.completed ? `<button class="btn-success btn-sm" onclick="markDone('${f.id}')">✓ انجام شد</button>` : ''}
+          <button class="btn-danger btn-sm" onclick="deleteFollowup('${f.id}')">حذف</button>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+function renderAllFollowups() {
+  $('allFollowupsTable').innerHTML = followups.length ? followups.map(f => {
+    const status = f.completed ? 'done' : getReminderStatus(f.followup_date);
+    const statusLabel = {overdue:'عقب‌افتاده',today:'امروز',upcoming:'آینده',future:'در انتظار',done:'انجام‌شده'}[status];
+    const pillClass = {overdue:'red',today:'orange',upcoming:'green',future:'gold',done:'green'}[status];
+    return `<tr>
+      <td><strong>${escapeHTML(f.title)}</strong></td>
+      <td>${escapeHTML(f.customer_name || '—')}</td>
+      <td>${escapeHTML(f.assignee || '—')}</td>
+      <td>${toPersianDate(f.followup_date)}</td>
+      <td><span class="pill ${pillClass}">${statusLabel}</span></td>
+    </tr>`;
+  }).join('') : '<tr><td colspan="5" class="empty">پیگیری ثبت‌شده‌ای وجود ندارد</td></tr>';
+}
+
+function renderReports() {
+  const active = customers.filter(c => c.status === 'مشتری فعال').length;
+  const leads = customers.filter(c => c.status === 'سرنخ جدید').length;
+  const overdue = followups.filter(f => !f.completed && getReminderStatus(f.followup_date) === 'overdue').length;
+  
+  $('reportPanel').innerHTML = `
+    <div class="detail-row"><span class="detail-label">کل مشتریان</span><span class="detail-value">${customers.length}</span></div>
+    <div class="detail-row"><span class="detail-label">مشتریان فعال</span><span class="detail-value" style="color:var(--green)">${active}</span></div>
+    <div class="detail-row"><span class="detail-label">سرنخ‌های جدید</span><span class="detail-value" style="color:var(--gold)">${leads}</span></div>
+    <div class="detail-row"><span class="detail-label">کل یادآوری‌ها</span><span class="detail-value">${followups.length}</span></div>
+    <div class="detail-row"><span class="detail-label">یادآوری‌های عقب‌افتاده</span><span class="detail-value" style="color:var(--red)">${overdue}</span></div>
+    <div class="detail-row"><span class="detail-label">نرخ انجام پیگیری‌ها</span><span class="detail-value">${followups.length ? Math.round(followups.filter(f=>f.completed).length/followups.length*100) : 0}٪</span></div>
+  `;
+}
+
+// ===== مشاهده جزئیات مشتری =====
+window.viewCustomer = function(id) {
+  const c = customers.find(x => x.id === id);
+  if (!c) return;
+  currentCustomerId = id;
+  
+  const customerFollowups = followups.filter(f => f.customer_name === c.name && !f.completed);
+  
+  $('detailContent').innerHTML = `
+    <div class="detail-row"><span class="detail-label">نام</span><span class="detail-value">${escapeHTML(c.name)}</span></div>
+    <div class="detail-row"><span class="detail-label">تماس</span><span class="detail-value" dir="ltr">${escapeHTML(c.phone)}</span></div>
+    <div class="detail-row"><span class="detail-label">مجموعه</span><span class="detail-value">${orgName(c.org)}</span></div>
+    <div class="detail-row"><span class="detail-label">مسئول فروش</span><span class="detail-value">${escapeHTML(c.owner || '—')}</span></div>
+    <div class="detail-row"><span class="detail-label">وضعیت</span><span class="detail-value">${escapeHTML(c.status)}</span></div>
+    <div class="detail-row" style="flex-direction:column;align-items:flex-start;gap:5px">
+      <span class="detail-label">یادداشت:</span>
+      <span class="detail-value" style="font-weight:400;color:#aaa;line-height:1.8">${escapeHTML(c.note || '—')}</span>
+    </div>
+    ${customerFollowups.length ? `
+      <div style="margin-top:15px;padding-top:15px;border-top:1px solid var(--line)">
+        <strong style="font-size:11px;color:var(--gold)">⏰ یادآوری‌های فعال این مشتری:</strong>
+        ${customerFollowups.map(f => `
+          <div style="padding:8px;margin-top:6px;background:#1a1a1a;border-radius:6px;font-size:10px">
+            <strong>${escapeHTML(f.title)}</strong> · ${toPersianDate(f.followup_date)}
+          </div>
+        `).join('')}
+      </div>
+    ` : ''}
+  `;
+  
+  $('editFromDetailBtn').onclick = () => { closeModal('detailModal'); editCustomer(c.id); };
+  $('deleteFromDetailBtn').onclick = () => { if(confirm('حذف شود؟')) deleteCustomer(c.id); };
+  $('addReminderForCustomerBtn').onclick = () => {
+    closeModal('detailModal');
+    $('reminderForm').reset();
+    $('remId').value = '';
+    $('remCustomer').value = c.name;
+    $('remAssignee').value = c.owner || '';
+    openModal('reminderModal');
+  };
+  
+  openModal('detailModal');
+};
+
+window.editCustomer = function(id) {
+  const c = customers.find(x => x.id === id);
+  if (!c) return;
+  $('customerModalTitle').textContent = 'ویرایش مشتری';
+  $('custId').value = c.id;
+  $('custName').value = c.name;
+  $('custPhone').value = c.phone;
+  $('custOrg').value = c.org;
+  $('custOwner').value = c.owner || '';
+  $('custStatus').value = c.status;
+  $('custNote').value = c.note || '';
+  openModal('customerModal');
+};
+
+window.deleteCustomer = async function(id) {
+  if (!ensureConnected()) return;
+  const { error } = await supabaseClient.from('customers').delete().eq('id', id);
+  if (error) showToast('خطا: ' + error.message, 'error');
+  else { showToast('حذف شد'); closeModal('detailModal'); loadData(); }
+};
+
+window.deleteFollowup = async function(id) {
+  if (!ensureConnected()) return;
+  if (!confirm('حذف شود؟')) return;
+  const { error } = await supabaseClient.from('followups').delete().eq('id', id);
+  if (error) showToast('خطا', 'error');
+  else { showToast('حذف شد'); loadData(); }
+};
+
+window.markDone = async function(id) {
+  if (!ensureConnected()) return;
+  const { error } = await supabaseClient.from('followups').update({ completed: true }).eq('id', id);
+  if (error) showToast('خطا', 'error');
+  else { showToast('✓ انجام شد'); loadData(); }
+};
+
+// ===== ثبت فرم مشتری =====
+$('customerForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  if (!ensureConnected()) return;
+  
+  const id = $('custId').value;
+  const data = {
+    name: $('custName').value.trim(),
+    phone: $('custPhone').value.trim(),
+    org: $('custOrg').value,
+    owner: $('custOwner').value.trim(),
+    status: $('custStatus').value,
+    note: $('custNote').value.trim()
+  };
+
+  let error;
+  if (id) {
+    const res = await supabaseClient.from('customers').update(data).eq('id', id);
+    error = res.error;
+  } else {
+    const res = await supabaseClient.from('customers').insert([data]);
+    error = res.error;
+  }
+  
+  if (error) showToast('خطا: ' + error.message, 'error');
+  else {
+    showToast(id ? '✓ ویرایش شد' : '✓ مشتری ثبت شد');
+    closeModal('customerModal');
+    $('customerForm').reset();
+    $('custId').value = '';
+    $('customerModalTitle').textContent = 'ثبت مشتری جدید';
+    loadData();
+  }
+});
+
+// ===== ثبت فرم یادآوری =====
+$('reminderForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  if (!ensureConnected()) return;
+  
+  const days = $('remDays').value;
+  const followupDate = calcFutureDate(days);
+  
+  const data = {
+    title: $('remTitle').value.trim(),
+    customer_name: $('remCustomer').value.trim(),
+    assignee: $('remAssignee').value.trim(),
+    followup_date: followupDate,
+    priority: $('remPriority').value,
+    note: $('remNote').value.trim(),
+    completed: false
+  };
+
+  const { error } = await supabaseClient.from('followups').insert([data]);
+  if (error) {
+    console.error(error);
+    showToast('خطا: ' + error.message, 'error');
+  } else {
+    showToast(`✓ یادآوری برای ${days} روز دیگر ثبت شد`);
+    closeModal('reminderModal');
+    $('reminderForm').reset();
+    loadData();
+  }
+});
+
+// ===== فرم تنظیمات =====
+$('settingsForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const url = $('setUrl').value.trim();
+  const key = $('setKey').value.trim();
+  
+  if (!url || !key) {
+    showToast('لطفاً هر دو فیلد را پر کنید', 'error');
+    return;
+  }
+  
+  if (!url.startsWith('https://') || !url.includes('.supabase.co')) {
+    showToast('آدرس URL معتبر نیست', 'error');
+    return;
+  }
+  
+  updateConnectionUI('testing', '⏳ در حال تست اتصال...');
+  $('setUrl').disabled = true;
+  $('setKey').disabled = true;
+  
+  // ذخیره کلیدها
+  saveKeys(url, key);
+  
+  // بازسازی کلاینت
+  try {
+    supabaseClient = window.supabase.createClient(url, key);
+    
+    // تست اتصال با یک query ساده
+    const { error } = await supabaseClient.from('customers').select('id').limit(1);
+    
+    if (error) {
+      console.error('خطای تست:', error);
+      clearKeys();
+      isCloudMode = false;
+      supabaseClient = null;
+      updateConnectionUI('disconnected', '❌ اتصال ناموفق: ' + error.message);
+      showToast('اتصال ناموفق. لطفاً کلیدها و دسترسی جدول‌ها را بررسی کنید', 'error');
+    } else {
+      isCloudMode = true;
+      updateConnectionUI('connected', '✅ اتصال با موفقیت برقرار شد');
+      showToast('✓ اتصال برقرار شد! در حال بارگذاری اطلاعات...');
+      await loadData();
+    }
+  } catch (e) {
+    console.error(e);
+    clearKeys();
+    updateConnectionUI('disconnected', '❌ خطا در اتصال');
+    showToast('خطا در اتصال به سرور', 'error');
+  }
+  
+  $('setUrl').disabled = false;
+  $('setKey').disabled = false;
+});
+
+$('clearKeysBtn').addEventListener('click', () => {
+  if (confirm('آیا مطمئنید؟ کلیدها پاک می‌شوند و سیستم غیرفعال می‌شود.')) {
+    clearKeys();
+    isCloudMode = false;
+    supabaseClient = null;
+    customers = [];
+    followups = [];
+    $('setUrl').value = '';
+    $('setKey').value = '';
+    updateConnectionUI('disconnected', '⚠ اتصال غیرفعال شد');
+    $('profileRole').textContent = 'نیاز به تنظیم اتصال';
+    renderAll();
+    showToast('کلیدها پاک شدند');
+  }
+});
+
+// کپی کد SQL
+window.copySQL = function() {
+  const sql = `create table if not exists customers (
+  id uuid primary key default gen_random_uuid(),
+  created_at timestamptz default now(),
+  name text, phone text, org text, owner text, status text, note text
+);
+create table if not exists followups (
+  id uuid primary key default gen_random_uuid(),
+  created_at timestamptz default now(),
+  title text, customer_name text, assignee text,
+  followup_date date, priority text, note text, completed boolean default false
+);
+alter table customers enable row level security;
+alter table followups enable row level security;
+create policy "Public Access" on customers for all using (true) with check (true);
+create policy "Public Access" on followups for all using (true) with check (true);`;
+  
+  navigator.clipboard.writeText(sql).then(() => {
+    showToast('✓ کد SQL کپی شد. حالا در SQL Editor اجرا کنید');
+  }).catch(() => {
+    showToast('خطا در کپی', 'error');
+  });
+};
+
+// ===== اعلان مرورگر =====
+function checkAndNotify() {
+  if (!('Notification' in window) || Notification.permission !== 'granted') return;
+  
+  const urgent = followups.filter(f => !f.completed && ['overdue','today'].includes(getReminderStatus(f.followup_date)));
+  if (urgent.length === 0) return;
+  
+  const overdue = urgent.filter(f => getReminderStatus(f.followup_date) === 'overdue').length;
+  const today = urgent.filter(f => getReminderStatus(f.followup_date) === 'today').length;
+  
+  const todayKey = 'notif_' + todayISO();
+  if (sessionStorage.getItem(todayKey)) return;
+  sessionStorage.setItem(todayKey, '1');
+  
+  try {
+    const notif = new Notification(`⏰ ${urgent.length} یادآوری فعال`, {
+      body: `${overdue} عقب‌افتاده · ${today} برای امروز`,
+      tag: 'daily-reminder'
+    });
+    notif.onclick = () => { window.focus(); goTo('reminders'); notif.close(); };
+  } catch(e) { console.log('Notification error:', e); }
+}
+
+// ===== فیلتر یادآوری‌ها =====
+document.querySelectorAll('.filter-tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+    currentFilter = tab.dataset.filter;
+    renderReminders();
+  });
+});
+
+// ===== ناوبری =====
+function goTo(page) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(b => b.classList.toggle('active', b.dataset.page === page));
+  const target = $('page-' + page);
+  if (target) target.classList.add('active');
+  $('pageTitle').innerHTML = titles[page] || 'مدیریت';
+  $('sidebar').classList.remove('open');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+  
+  // پر کردن فرم تنظیمات با مقادیر ذخیره‌شده
+  if (page === 'settings') {
+    $('setUrl').value = getSavedUrl();
+    $('setKey').value = getSavedKey();
+  }
+}
+
+// ===== رویدادهای اولیه =====
+document.addEventListener('DOMContentLoaded', () => {
+  document.querySelectorAll('.nav-item').forEach(b => b.addEventListener('click', () => goTo(b.dataset.page)));
+  $('mobileMenu').addEventListener('click', () => $('sidebar').classList.toggle('open'));
+  $('customerSearch').addEventListener('input', renderCustomers);
+  $('orgFilter').addEventListener('change', renderCustomers);
+
+  $('addCustomerBtn').addEventListener('click', () => { 
+    if (!ensureConnected()) return;
+    $('customerForm').reset(); $('custId').value = ''; 
+    $('customerModalTitle').textContent = 'ثبت مشتری جدید'; 
+    openModal('customerModal'); 
+  });
+  $('addCustomerBtn2').addEventListener('click', () => { 
+    if (!ensureConnected()) return;
+    $('customerForm').reset(); $('custId').value = ''; 
+    $('customerModalTitle').textContent = 'ثبت مشتری جدید'; 
+    openModal('customerModal'); 
+  });
+  $('addReminderBtn').addEventListener('click', () => { 
+    if (!ensureConnected()) return;
+    $('reminderForm').reset(); $('remId').value = ''; 
+    openModal('reminderModal'); 
+  });
+
+  document.querySelectorAll('.modal-backdrop').forEach(m => {
+    m.addEventListener('click', e => { if (e.target === m) m.classList.remove('open'); });
+  });
+
+  // راه‌اندازی اولیه
+  const connected = initSupabase();
+  if (connected) {
+    loadData();
+  } else {
+    renderAll();
+    // اگر کلیدها تنظیم نشده، خودکار به صفحه تنظیمات برو
+    if (!getSavedUrl()) {
+      setTimeout(() => {
+        showToast('⚠ برای شروع، ابتدا اتصال را از بخش تنظیمات برقرار کنید', 'warning');
+      }, 500);
+    }
+  }
+});
+</script>
+</body>
+</html>
